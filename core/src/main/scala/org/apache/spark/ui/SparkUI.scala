@@ -38,6 +38,7 @@ private[spark] class SparkUI private (
     val executorsListener: ExecutorsListener,
     val jobProgressListener: JobProgressListener,
     val storageListener: StorageListener,
+    val websocketListener : WebSocketListener,
     var appName: String,
     val basePath: String)
   extends WebUI(securityManager, SparkUI.getUIPort(conf), conf, basePath, "SparkUI")
@@ -53,6 +54,12 @@ private[spark] class SparkUI private (
     attachTab(new StorageTab(this))
     attachTab(new EnvironmentTab(this))
     attachTab(new ExecutorsTab(this))
+
+    // Add websockets endpoint
+    val wsHandler = new WebSocketUIHandler(websocketListener)
+    wsHandler.setContextPath("/ws")
+    attachHandler(wsHandler)
+
     attachHandler(createStaticHandler(SparkUI.STATIC_RESOURCE_DIR, "/static"))
     attachHandler(createRedirectHandler("/", "/jobs", basePath = basePath))
     attachHandler(createRedirectHandler(
@@ -142,13 +149,15 @@ private[spark] object SparkUI {
     val storageStatusListener = new StorageStatusListener
     val executorsListener = new ExecutorsListener(storageStatusListener)
     val storageListener = new StorageListener(storageStatusListener)
+    val websocketListener = new WebSocketListener
 
     listenerBus.addListener(environmentListener)
     listenerBus.addListener(storageStatusListener)
     listenerBus.addListener(executorsListener)
     listenerBus.addListener(storageListener)
+    listenerBus.addListener(websocketListener)
 
     new SparkUI(sc, conf, securityManager, environmentListener, storageStatusListener,
-      executorsListener, _jobProgressListener, storageListener, appName, basePath)
+      executorsListener, _jobProgressListener, storageListener, websocketListener, appName, basePath)
   }
 }
