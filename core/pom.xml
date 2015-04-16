@@ -141,6 +141,12 @@
       <artifactId>jetty-servlet</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-websocket</artifactId>
+      <version>8.1.14.v20131031</version>
+      <scope>compile</scope>
+    </dependency>
     <!-- Because we mark jetty as provided and shade it, its dependency
          orbit is ignored, so we explicitly list it here (see SPARK-5557).-->
     <dependency>
