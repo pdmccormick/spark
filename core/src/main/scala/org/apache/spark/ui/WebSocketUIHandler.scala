@@ -32,36 +32,36 @@ class WebSocketClientHandler(scope : WebSocketUIHandler) extends WebSocket
   def getConnection() : FrameConnection = conn
 
   override def onOpen(connection: Connection): Unit = {
-    logInfo("onOpen " + conn + " " + conn.getProtocol())
+    logDebug("onOpen " + conn + " " + conn.getProtocol())
   }
 
   override def onClose(closeCode: Int, message: String): Unit = {
-    logInfo("onClose " + closeCode + " " + message)
+    logDebug("onClose " + closeCode + " " + message)
     scope.clients.remove(this)
   }
 
   override def onFrame(flags: Byte, opcode: Byte, data: Array[Byte], offset: Int, length: Int): Boolean = {
-    logInfo("onFrame " + TypeUtil.toHexString(flags) + " " + TypeUtil.toHexString(opcode) + " " + TypeUtil.toHexString(data,offset,length))
+    logDebug("onFrame " + TypeUtil.toHexString(flags) + " " + TypeUtil.toHexString(opcode) + " " + TypeUtil.toHexString(data,offset,length))
     false
   }
 
   override def onHandshake(connection: FrameConnection): Unit = {
     conn = connection
-    logInfo("onHandshake " + conn + " " + conn.getClass().getSimpleName())
+    logDebug("onHandshake " + conn + " " + conn.getClass().getSimpleName())
   }
 
   override def onMessage(data: Array[Byte], offset: Int, length: Int): Unit = {
-    logInfo("onMessage " + TypeUtil.toHexString(data,offset,length))
+    logDebug("onMessage " + TypeUtil.toHexString(data,offset,length))
   }
 
   override def onMessage(data: String): Unit = {
-    logInfo("onMessage " + data)
+    logDebug("onMessage " + data)
 
     conn.sendMessage("replying to: " + data)
   }
 
   override def onControl(controlCode: Byte, data: Array[Byte], offset: Int, length: Int): Boolean = {
-    logInfo("onControl " + TypeUtil.toHexString(controlCode) + " " + TypeUtil.toHexString(data,offset,length))
+    logDebug("onControl " + TypeUtil.toHexString(controlCode) + " " + TypeUtil.toHexString(data,offset,length))
     false
   }
 }
@@ -93,7 +93,7 @@ class WebSocketUIHandler(listener : WebSocketListener) extends ServletContextHan
   }
 
   override def doWebSocketConnect(request: HttpServletRequest, protocol: String) : WebSocket = {
-    logInfo("doWebSocketConnect: " + protocol)
+    logDebug("doWebSocketConnect: " + protocol)
     val client = new WebSocketClientHandler(this)
     clients.add(client)
 
@@ -103,10 +103,10 @@ class WebSocketUIHandler(listener : WebSocketListener) extends ServletContextHan
   def broadcastEvent(event: SparkListenerEvent) = {
     val repr = pretty(JsonProtocol.sparkEventToJson(event))
 
-    logInfo("broadcasting event: " + event)
+    logDebug("broadcasting event: " + event)
 
     for (client <- clients if client.conn.isOpen) {
-      logInfo("      broadcast => " + client.conn)
+      logDebug("      broadcast => " + client.conn)
       client.conn.sendMessage(repr)
     }
   }
