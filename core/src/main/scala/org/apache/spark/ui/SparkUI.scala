@@ -17,6 +17,7 @@
 
 package org.apache.spark.ui
 
+import org.apache.spark.ui.events.{EventsWebSocketEndpointHandler, EventsBusListener}
 import org.apache.spark.{Logging, SecurityManager, SparkConf, SparkContext}
 import org.apache.spark.scheduler._
 import org.apache.spark.storage.StorageStatusListener
@@ -38,6 +39,7 @@ private[spark] class SparkUI private (
     val executorsListener: ExecutorsListener,
     val jobProgressListener: JobProgressListener,
     val storageListener: StorageListener,
+    val eventsListener : EventsBusListener,
     var appName: String,
     val basePath: String)
   extends WebUI(securityManager, SparkUI.getUIPort(conf), conf, basePath, "SparkUI")
@@ -53,6 +55,8 @@ private[spark] class SparkUI private (
     attachTab(new StorageTab(this))
     attachTab(new EnvironmentTab(this))
     attachTab(new ExecutorsTab(this))
+
+    attachHandler(new EventsWebSocketEndpointHandler("/events", eventsListener))
     attachHandler(createStaticHandler(SparkUI.STATIC_RESOURCE_DIR, "/static"))
     attachHandler(createRedirectHandler("/", "/jobs", basePath = basePath))
     attachHandler(createRedirectHandler(
@@ -142,13 +146,15 @@ private[spark] object SparkUI {
     val storageStatusListener = new StorageStatusListener
     val executorsListener = new ExecutorsListener(storageStatusListener)
     val storageListener = new StorageListener(storageStatusListener)
+    val eventsListener = new EventsBusListener
 
     listenerBus.addListener(environmentListener)
     listenerBus.addListener(storageStatusListener)
     listenerBus.addListener(executorsListener)
     listenerBus.addListener(storageListener)
+    listenerBus.addListener(eventsListener)
 
     new SparkUI(sc, conf, securityManager, environmentListener, storageStatusListener,
-      executorsListener, _jobProgressListener, storageListener, appName, basePath)
+      executorsListener, _jobProgressListener, storageListener, eventsListener, appName, basePath)
   }
 }
