@@ -76,15 +76,7 @@ private[ui] class StageTableBase(
     val basePathUri = UIUtils.prependBaseUri(basePath)
 
     val killLink = if (killEnabled) {
-      val killLinkUri = s"$basePathUri/stages/stage/kill/"
-      val confirm =
-        s"if (window.confirm('Are you sure you want to kill stage ${s.stageId} ?')) " +
-        "{ this.parentNode.submit(); return true; } else { return false; }"
-      <form action={killLinkUri} method="POST" style="display:inline">
-        <input type="hidden" name="id" value={s.stageId.toString}/>
-        <input type="hidden" name="terminate" value="true"/>
-        <a href="#" onclick={confirm} class="kill-link">(kill)</a>
-      </form>
+      <a href="#" class="kill-link action-stage-kill" data-stage-id={s.stageId.toString}>(kill)</a>
     }
 
     val nameLinkUri = s"$basePathUri/stages/stage?id=${s.stageId}&attempt=${s.attemptId}"

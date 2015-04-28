@@ -165,6 +165,8 @@ private[spark] object UIUtils extends Logging {
     <script src={prependBaseUri("/static/initialize-tooltips.js")}></script>
     <script src={prependBaseUri("/static/table.js")}></script>
     <script src={prependBaseUri("/static/additional-metrics.js")}></script>
+    <script src={prependBaseUri("/static/webui.js")}></script>
+    <script>{ "SPARK_DRIVER_WEBUI.setBasePath('" + prependBaseUri("/") + "');" }</script>
   }
 
   /** Returns a spark page with correctly formatted headers */
