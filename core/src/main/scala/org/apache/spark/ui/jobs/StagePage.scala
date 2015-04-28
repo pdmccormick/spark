@@ -609,11 +609,10 @@ private[ui] class StagePage(parent: StagesTab) extends WebUIPage("stage") {
       })
     val details = if (isMultiline) {
       // scalastyle:off
-      <span onclick="this.parentNode.querySelector('.stacktrace-details').classList.toggle('collapsed')"
-            class="expand-details">
+      <span class="expand-details action-toggle-details">
         +details
       </span> ++
-        <div class="stacktrace-details collapsed">
+        <div class="stacktrace-details collapsed toggleable-details">
           <pre>{error}</pre>
         </div>
       // scalastyle:on

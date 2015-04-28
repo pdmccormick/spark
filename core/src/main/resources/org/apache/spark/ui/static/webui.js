@@ -39,10 +39,19 @@
         }
     }
 
+    function handleToggleDetails(ev) {
+        ev.preventDefault();
+
+        var elem = $(ev.target);
+        var details = elem.siblings(".toggleable-details");
+        details.toggleClass("collapsed");
+    }
+
     $(function() {
         /* At this point, the page _is_ ready. */
 
         $(".action-stage-kill").click(handleStageKill);
+        $(".action-toggle-details").click(handleToggleDetails);
     });
 
     globals.SPARK_DRIVER_WEBUI = {

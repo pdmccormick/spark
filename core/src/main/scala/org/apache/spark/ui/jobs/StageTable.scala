@@ -84,11 +84,10 @@ private[ui] class StageTableBase(
 
     val cachedRddInfos = s.rddInfos.filter(_.numCachedPartitions > 0)
     val details = if (s.details.nonEmpty) {
-      <span onclick="this.parentNode.querySelector('.stage-details').classList.toggle('collapsed')"
-            class="expand-details">
+      <span class="expand-details action-toggle-details">
         +details
       </span> ++
-      <div class="stage-details collapsed">
+      <div class="stage-details collapsed toggleable-details">
         {if (cachedRddInfos.nonEmpty) {
           Text("RDD: ") ++
           cachedRddInfos.map { i =>
@@ -191,11 +190,10 @@ private[ui] class FailedStageTable(
       })
     val details = if (isMultiline) {
       // scalastyle:off
-      <span onclick="this.parentNode.querySelector('.stacktrace-details').classList.toggle('collapsed')"
-            class="expand-details">
+      <span class="expand-details action-toggle-details">
         +details
       </span> ++
-        <div class="stacktrace-details collapsed">
+        <div class="stacktrace-details collapsed toggleable-details">
           <pre>{failureReason}</pre>
         </div>
       // scalastyle:on
