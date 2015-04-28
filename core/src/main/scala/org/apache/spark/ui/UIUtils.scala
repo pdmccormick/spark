@@ -309,7 +309,7 @@ private[spark] object UIUtils extends Logging {
 
     <div class="progress">
       <span style="text-align:center; position:absolute; width:100%; left:0;">
-        {completed}/{total}
+        <span class="progress-completed">{completed}</span>/<span class="progress-total">{total}</span>
         { if (failed > 0) s"($failed failed)" }
         { if (skipped > 0) s"($skipped skipped)" }
       </span>

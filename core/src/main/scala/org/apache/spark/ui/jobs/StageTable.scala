@@ -64,7 +64,7 @@ private[ui] class StageTableBase(
 
   /** Special table that merges two header cells. */
   protected def stageTable[T](makeRow: T => Seq[Node], rows: Seq[T]): Seq[Node] = {
-    <table class="table table-bordered table-striped table-condensed sortable">
+    <table class="table table-bordered table-striped table-condensed sortable stages-table">
       <thead>{columns}</thead>
       <tbody>
         {rows.map(r => makeRow(r))}
@@ -134,12 +134,12 @@ private[ui] class StageTableBase(
     val shuffleWriteWithUnit = if (shuffleWrite > 0) Utils.bytesToString(shuffleWrite) else ""
 
     {if (s.attemptId > 0) {
-      <td>{s.stageId} (retry {s.attemptId})</td>
+      <td class="stage-id-field">{s.stageId} (retry {s.attemptId})</td>
     } else {
-      <td>{s.stageId}</td>
+      <td class="stage-id-field">{s.stageId}</td>
     }} ++
     {if (isFairScheduler) {
-      <td>
+      <td class="stage-pool">
         <a href={"%s/stages/pool?poolname=%s"
           .format(UIUtils.prependBaseUri(basePath), stageData.schedulingPool)}>
           {stageData.schedulingPool}
@@ -148,24 +148,24 @@ private[ui] class StageTableBase(
     } else {
       Seq.empty
     }} ++
-    <td>{makeDescription(s)}</td>
-    <td sorttable_customkey={s.submissionTime.getOrElse(0).toString} valign="middle">
+    <td class="stage-description">{makeDescription(s)}</td>
+    <td sorttable_customkey={s.submissionTime.getOrElse(0).toString} valign="middle" class="stage-submitted">
       {submissionTime}
     </td>
-    <td sorttable_customkey={duration.getOrElse(-1).toString}>{formattedDuration}</td>
-    <td class="progress-cell">
+    <td sorttable_customkey={duration.getOrElse(-1).toString} class="stage-duration">{formattedDuration}</td>
+    <td class="progress-cell stage-task-progress">
       {UIUtils.makeProgressBar(started = stageData.numActiveTasks,
         completed = stageData.completedIndices.size, failed = stageData.numFailedTasks,
         skipped = 0, total = s.numTasks)}
     </td>
-    <td sorttable_customkey={inputRead.toString}>{inputReadWithUnit}</td>
-    <td sorttable_customkey={outputWrite.toString}>{outputWriteWithUnit}</td>
-    <td sorttable_customkey={shuffleRead.toString}>{shuffleReadWithUnit}</td>
-    <td sorttable_customkey={shuffleWrite.toString}>{shuffleWriteWithUnit}</td>
+    <td sorttable_customkey={inputRead.toString} class="stage-input-read">{inputReadWithUnit}</td>
+    <td sorttable_customkey={outputWrite.toString} class="stage-output-write">{outputWriteWithUnit}</td>
+    <td sorttable_customkey={shuffleRead.toString} class="stage-shuffle-read">{shuffleReadWithUnit}</td>
+    <td sorttable_customkey={shuffleWrite.toString} class="stage-shuffle-write">{shuffleWriteWithUnit}</td>
   }
 
   /** Render an HTML row that represents a stage */
-  private def renderStageRow(s: StageInfo): Seq[Node] = <tr>{stageRow(s)}</tr>
+  private def renderStageRow(s: StageInfo): Seq[Node] = <tr id={"stage-" + s.stageId} class="stages-table-row">{stageRow(s)}</tr>
 }
 
 private[ui] class FailedStageTable(
@@ -200,7 +200,7 @@ private[ui] class FailedStageTable(
     } else {
       ""
     }
-    val failureReasonHtml = <td valign="middle">{failureReasonSummary}{details}</td>
+    val failureReasonHtml = <td valign="middle" class="stage-failure-reason">{failureReasonSummary}{details}</td>
     basicColumns ++ failureReasonHtml
   }
 }

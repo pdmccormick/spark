@@ -72,7 +72,7 @@ private[ui] class AllStagesPage(parent: StagesTab) extends WebUIPage("") {
                 // Total duration is not meaningful unless the UI is live
                 <li>
                   <strong>Total Duration: </strong>
-                  {UIUtils.formatDuration(now - sc.get.startTime)}
+                  <span class="total-duration">{UIUtils.formatDuration(now - sc.get.startTime)}</span>
                 </li>
               }
             }
@@ -84,7 +84,7 @@ private[ui] class AllStagesPage(parent: StagesTab) extends WebUIPage("") {
               if (shouldShowActiveStages) {
                 <li>
                   <a href="#active"><strong>Active Stages:</strong></a>
-                  {activeStages.size}
+                  <span class="active-stages-count">{activeStages.size}</span>
                 </li>
               }
             }
@@ -92,7 +92,7 @@ private[ui] class AllStagesPage(parent: StagesTab) extends WebUIPage("") {
               if (shouldShowPendingStages) {
                 <li>
                   <a href="#pending"><strong>Pending Stages:</strong></a>
-                  {pendingStages.size}
+                  <span class="pending-stages-count">{pendingStages.size}</span>
                 </li>
               }
             }
@@ -100,7 +100,7 @@ private[ui] class AllStagesPage(parent: StagesTab) extends WebUIPage("") {
               if (shouldShowCompletedStages) {
                 <li>
                   <a href="#completed"><strong>Completed Stages:</strong></a>
-                  {numCompletedStages}
+                  <span class="completed-stages-count">{numCompletedStages}</span>
                 </li>
               }
             }
@@ -108,7 +108,7 @@ private[ui] class AllStagesPage(parent: StagesTab) extends WebUIPage("") {
               if (shouldShowFailedStages) {
                 <li>
                   <a href="#failed"><strong>Failed Stages:</strong></a>
-                  {numFailedStages}
+                  <span class="failed-stages-count">{numFailedStages}</span>
                 </li>
               }
             }
@@ -118,26 +118,41 @@ private[ui] class AllStagesPage(parent: StagesTab) extends WebUIPage("") {
       var content = summary ++
         {
           if (sc.isDefined && isFairScheduler) {
-            <h4>{pools.size} Fair Scheduler Pools</h4> ++ poolTable.toNodeSeq
+            <div id="scheduler-pools">
+              <h4><span class="scheduler-pool-count">{pools.size}</span> Fair Scheduler Pools</h4>
+              { poolTable.toNodeSeq }
+            </div>
           } else {
             Seq[Node]()
           }
         }
       if (shouldShowActiveStages) {
-        content ++= <h4 id="active">Active Stages ({activeStages.size})</h4> ++
-        activeStagesTable.toNodeSeq
+        content ++=
+          <div id="active-stages">
+            <h4 id="active">Active Stages (<span class="active-stages-count">{activeStages.size}</span>)</h4>
+            { activeStagesTable.toNodeSeq }
+          </div>
       }
       if (shouldShowPendingStages) {
-        content ++= <h4 id="pending">Pending Stages ({pendingStages.size})</h4> ++
-        pendingStagesTable.toNodeSeq
+        content ++=
+          <div id="pending-stages">
+            <h4 id="pending">Pending Stages (<span class="pending-stages-count">{pendingStages.size}</span>)</h4>
+            { pendingStagesTable.toNodeSeq }
+          </div>
       }
       if (shouldShowCompletedStages) {
-        content ++= <h4 id="completed">Completed Stages ({numCompletedStages})</h4> ++
-        completedStagesTable.toNodeSeq
+        content ++=
+          <div id="completed-stages">
+            <h4 id="completed">Completed Stages (<span class="completed-stages-count">{numCompletedStages}</span>)</h4>
+            { completedStagesTable.toNodeSeq }
+          </div>
       }
       if (shouldShowFailedStages) {
-        content ++= <h4 id ="failed">Failed Stages ({numFailedStages})</h4> ++
-        failedStagesTable.toNodeSeq
+        content ++=
+          <div id="failed-stages">
+            <h4 id ="failed">Failed Stages (<span class="failed-stages-count">{numFailedStages}</span>)</h4>
+            { failedStagesTable.toNodeSeq }
+          </div>
       }
       UIUtils.headerSparkPage("Spark Stages (for all jobs)", content, parent)
     }

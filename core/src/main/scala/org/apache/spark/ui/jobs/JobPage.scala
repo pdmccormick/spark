@@ -99,7 +99,7 @@ private[ui] class JobPage(parent: JobsTab) extends WebUIPage("job") {
           <ul class="unstyled">
             <li>
               <Strong>Status:</Strong>
-              {jobData.status}
+              <span class="job-status">{jobData.status}</span>
             </li>
             {
               if (jobData.jobGroup.isDefined) {
@@ -113,7 +113,7 @@ private[ui] class JobPage(parent: JobsTab) extends WebUIPage("job") {
               if (shouldShowActiveStages) {
                 <li>
                   <a href="#active"><strong>Active Stages:</strong></a>
-                  {activeStages.size}
+                  <span class="active-stage-count">{activeStages.size}</span>
                 </li>
               }
             }
@@ -122,7 +122,7 @@ private[ui] class JobPage(parent: JobsTab) extends WebUIPage("job") {
                 <li>
                   <a href="#pending">
                     <strong>Pending Stages:</strong>
-                  </a>{pendingOrSkippedStages.size}
+                  </a><span class="pending-stage-count">{pendingOrSkippedStages.size}</span>
                 </li>
               }
             }
@@ -130,7 +130,7 @@ private[ui] class JobPage(parent: JobsTab) extends WebUIPage("job") {
               if (shouldShowCompletedStages) {
                 <li>
                   <a href="#completed"><strong>Completed Stages:</strong></a>
-                  {completedStages.size}
+                  <span class="completed-stage-count">{completedStages.size}</span>
                 </li>
               }
             }
@@ -138,7 +138,7 @@ private[ui] class JobPage(parent: JobsTab) extends WebUIPage("job") {
               if (shouldShowSkippedStages) {
               <li>
                 <a href="#skipped"><strong>Skipped Stages:</strong></a>
-                {pendingOrSkippedStages.size}
+                <span class="skipped-stage-count">{pendingOrSkippedStages.size}</span>
               </li>
             }
             }
@@ -146,7 +146,7 @@ private[ui] class JobPage(parent: JobsTab) extends WebUIPage("job") {
               if (shouldShowFailedStages) {
                 <li>
                   <a href="#failed"><strong>Failed Stages:</strong></a>
-                  {failedStages.size}
+                  <span class="failed-stage-count">{failedStages.size}</span>
                 </li>
               }
             }
@@ -155,24 +155,39 @@ private[ui] class JobPage(parent: JobsTab) extends WebUIPage("job") {
 
       var content = summary
       if (shouldShowActiveStages) {
-        content ++= <h4 id="active">Active Stages ({activeStages.size})</h4> ++
-          activeStagesTable.toNodeSeq
+        content ++=
+          <div id="active-stages">
+            <h4 id="active">Active Stages (<span class="active-stage-count">{activeStages.size}</span>)</h4>
+            { activeStagesTable.toNodeSeq }
+          </div>
       }
       if (shouldShowPendingStages) {
-        content ++= <h4 id="pending">Pending Stages ({pendingOrSkippedStages.size})</h4> ++
-          pendingOrSkippedStagesTable.toNodeSeq
+        content ++=
+          <div id="pending-stages">
+            <h4 id="pending">Pending Stages (<span class="pending-stage-count">{pendingOrSkippedStages.size}</span>)</h4>
+            { pendingOrSkippedStagesTable.toNodeSeq }
+          </div>
       }
       if (shouldShowCompletedStages) {
-        content ++= <h4 id="completed">Completed Stages ({completedStages.size})</h4> ++
-          completedStagesTable.toNodeSeq
+        content ++=
+          <div id="completed-stages">
+            <h4 id="completed">Completed Stages (<span class="completed-stage-count">{completedStages.size}</span>)</h4>
+            { completedStagesTable.toNodeSeq }
+          </div>
       }
       if (shouldShowSkippedStages) {
-        content ++= <h4 id="skipped">Skipped Stages ({pendingOrSkippedStages.size})</h4> ++
-          pendingOrSkippedStagesTable.toNodeSeq
+        content ++=
+          <div id="skipped-stages">
+            <h4 id="skipped">Skipped Stages (<span class="skipped-stage-count">{pendingOrSkippedStages.size}</span>)</h4>
+            { pendingOrSkippedStagesTable.toNodeSeq }
+          </div>
       }
       if (shouldShowFailedStages) {
-        content ++= <h4 id ="failed">Failed Stages ({failedStages.size})</h4> ++
-          failedStagesTable.toNodeSeq
+        content ++=
+          <div id="failed-stages">
+            <h4 id ="failed">Failed Stages (<span class="failed-stage-count">{failedStages.size}</span>)</h4>
+            { failedStagesTable.toNodeSeq }
+          </div>
       }
       UIUtils.headerSparkPage(s"Details for Job $jobId", content, parent)
     }

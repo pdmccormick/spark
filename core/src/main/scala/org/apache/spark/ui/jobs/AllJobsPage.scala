@@ -61,24 +61,24 @@ private[ui] class AllJobsPage(parent: JobsTab) extends WebUIPage("") {
       val formattedSubmissionTime = job.submissionTime.map(UIUtils.formatDate).getOrElse("Unknown")
       val detailUrl =
         "%s/jobs/job?id=%s".format(UIUtils.prependBaseUri(parent.basePath), job.jobId)
-      <tr>
-        <td sorttable_customkey={job.jobId.toString}>
+      <tr id={ "job-" + job.jobId.toString }>
+        <td sorttable_customkey={job.jobId.toString} class="job-and-group-id-field">
           {job.jobId} {job.jobGroup.map(id => s"($id)").getOrElse("")}
         </td>
-        <td>
+        <td class="job-description">
           <span class="description-input" title={lastStageDescription}>{lastStageDescription}</span>
           <a href={detailUrl}>{lastStageName}</a>
         </td>
-        <td sorttable_customkey={job.submissionTime.getOrElse(-1).toString}>
+        <td sorttable_customkey={job.submissionTime.getOrElse(-1).toString} class="job-submitted">
           {formattedSubmissionTime}
         </td>
-        <td sorttable_customkey={duration.getOrElse(-1).toString}>{formattedDuration}</td>
-        <td class="stage-progress-cell">
-          {job.completedStageIndices.size}/{job.stageIds.size - job.numSkippedStages}
-          {if (job.numFailedStages > 0) s"(${job.numFailedStages} failed)"}
-          {if (job.numSkippedStages > 0) s"(${job.numSkippedStages} skipped)"}
+        <td sorttable_customkey={duration.getOrElse(-1).toString} class="job-duration">{formattedDuration}</td>
+        <td class="stage-progress-cell job-stage-progress">
+          <span class="completed-job-stage-count">{job.completedStageIndices.size}</span>/<span class="total-job-stage-count">{job.stageIds.size - job.numSkippedStages}</span>
+          {if (job.numFailedStages > 0) { "(" ++ <span class="failed-job-stage-count">{ job.numFailedStages.toString }</span> ++ " failed)" }}
+          {if (job.numSkippedStages > 0) { "(" ++ <span class="skipped-job-stage-count">{ job.numSkippedStages.toString }</span> ++ " skipped)" }}
         </td>
-        <td class="progress-cell">
+        <td class="progress-cell job-task-progress">
           {UIUtils.makeProgressBar(started = job.numActiveTasks, completed = job.numCompletedTasks,
            failed = job.numFailedTasks, skipped = job.numSkippedTasks,
            total = job.numTasks - job.numSkippedTasks)}
@@ -86,7 +86,7 @@ private[ui] class AllJobsPage(parent: JobsTab) extends WebUIPage("") {
       </tr>
     }
 
-    <table class="table table-bordered table-striped table-condensed sortable">
+    <table class="table table-bordered table-striped table-condensed sortable jobs-table">
       <thead>{columns}</thead>
       <tbody>
         {jobs.map(makeRow)}
@@ -119,7 +119,7 @@ private[ui] class AllJobsPage(parent: JobsTab) extends WebUIPage("") {
               // Total duration is not meaningful unless the UI is live
               <li>
                 <strong>Total Duration: </strong>
-                {UIUtils.formatDuration(now - startTime.get)}
+                <span class="total-duration">{UIUtils.formatDuration(now - startTime.get)}</span>
               </li>
             }}
             <li>
@@ -130,7 +130,7 @@ private[ui] class AllJobsPage(parent: JobsTab) extends WebUIPage("") {
               if (shouldShowActiveJobs) {
                 <li>
                   <a href="#active"><strong>Active Jobs:</strong></a>
-                  {activeJobs.size}
+                  <span class="active-job-count">{activeJobs.size}</span>
                 </li>
               }
             }
@@ -138,7 +138,7 @@ private[ui] class AllJobsPage(parent: JobsTab) extends WebUIPage("") {
               if (shouldShowCompletedJobs) {
                 <li>
                   <a href="#completed"><strong>Completed Jobs:</strong></a>
-                  {completedJobs.size}
+                  <span class="completed-job-count">{completedJobs.size}</span>
                 </li>
               }
             }
@@ -146,7 +146,7 @@ private[ui] class AllJobsPage(parent: JobsTab) extends WebUIPage("") {
               if (shouldShowFailedJobs) {
                 <li>
                   <a href="#failed"><strong>Failed Jobs:</strong></a>
-                  {failedJobs.size}
+                  <span class="failed-job-count">{failedJobs.size}</span>
                 </li>
               }
             }
@@ -155,16 +155,25 @@ private[ui] class AllJobsPage(parent: JobsTab) extends WebUIPage("") {
 
       var content = summary
       if (shouldShowActiveJobs) {
-        content ++= <h4 id="active">Active Jobs ({activeJobs.size})</h4> ++
-          activeJobsTable
+        content ++=
+          <div id="active-jobs">
+            <h4 id="active">Active Jobs (<span class="active-job-count">{activeJobs.size}</span>)</h4>
+            { activeJobsTable }
+          </div>
       }
       if (shouldShowCompletedJobs) {
-        content ++= <h4 id="completed">Completed Jobs ({completedJobs.size})</h4> ++
-          completedJobsTable
+        content ++=
+          <div id="completed-jobs">
+            <h4 id="completed">Completed Jobs (<span class="completed-job-count">{completedJobs.size}</span>)</h4>
+            { completedJobsTable }
+          </div>
       }
       if (shouldShowFailedJobs) {
-        content ++= <h4 id ="failed">Failed Jobs ({failedJobs.size})</h4> ++
-          failedJobsTable
+        content ++=
+          <div id="failed-jobs">
+            <h4 id ="failed">Failed Jobs (<span class="failed-job-count">{failedJobs.size}</span>)</h4>
+            { failedJobsTable }
+          </div>
       }
       val helpText = """A job is triggered by an action, like "count()" or "saveAsTextFile()".""" +
         " Click on a job's title to see information about the stages of tasks associated with" +
